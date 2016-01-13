@@ -1,0 +1,2 @@
+@javax.xml.bind.annotation.XmlSchema(namespace = "http://ws.vacaystayconnect.com/proplist", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+package com.vsc.model.property.summary.request;

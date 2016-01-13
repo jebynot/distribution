@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Created by XStruct, Version 1.1 -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!-- Simple types -->
+	<xsd:element name="propertyName" type="xsd:string"/>
+	<xsd:element name="propertyType" type="xsd:string"/>
+	<xsd:element name="propertyManager" type="xsd:string" />
+	<xsd:element name="addressLine1" type="xsd:string"/>
+	<xsd:element name="addressLine2" type="xsd:string"/>
+	<xsd:element name="addressLine3" type="xsd:string"/>
+	<xsd:element name="cityName" type="xsd:string"/>
+	<xsd:element name="postalCode" type="xsd:integer"/>
+	<xsd:element name="numberOfFloors" type="xsd:integer"/>
+	<xsd:element name="unitName" type="xsd:string"/>
+	<xsd:element name="unitType" type="xsd:string"/>
+	<xsd:element name="minOccupancy" type="xsd:string"/>
+	<xsd:element name="maxOccupancy" type="xsd:string"/>
+	<xsd:element name="privateOccupancy" type="xsd:string"/>
+	<xsd:element name="baths" type="xsd:string"/>
+	<xsd:element name="halfBaths" type="xsd:string"/>
+	<xsd:element name="petsAllowed" type="xsd:string"/>
+	<xsd:element name="nonSmoking" type="xsd:string"/>
+	<xsd:element name="propertyChainCode" type="xsd:string"/>
+	<xsd:element name="errorMessage" type="xsd:string"/>
+	<xsd:element name="success" type="xsd:boolean"/>
+	
+<!-- Empty elements -->
+	<xsd:element name="warning">
+		<xsd:complexType/>
+	</xsd:element>
+	<xsd:element name="error">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="errorMessage"/>
+			</xsd:sequence>
+			<xsd:attribute name="errorCode" type="xsd:integer" />
+			<xsd:attribute name="errorType" type="xsd:integer" />
+		</xsd:complexType>
+
+	</xsd:element>
+
+<!-- Complex types -->
+	<xsd:element name="VSC_searchRS">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:sequence>
+					<xsd:element ref="success"/>
+					<xsd:element ref="warnings"/>
+					<xsd:element ref="errors"/>
+					<xsd:element ref="searchResponse"/>
+				</xsd:sequence>
+			</xsd:sequence>
+			<xsd:attribute name="timeStamp" type="xsd:string" />
+			<xsd:attribute name="version" type="xsd:decimal" />
+			<xsd:attribute name="transactionID" type="xsd:string"/>
+			<xsd:attribute name="target" type="xsd:string" />
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="warnings">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="warning"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="errors">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="error" minOccurs="1" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="searchResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="properties"/>
+			</xsd:sequence>
+			<xsd:attribute name="maxResults" type="xsd:integer" />
+			<xsd:attribute name="displaySequence" type="xsd:string" />
+			<xsd:attribute name="detailsInclusive" type="xsd:string" />
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="properties">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="property"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="property">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:sequence>
+					<xsd:element ref="propertyBasicInfo"/>
+					<xsd:element ref="units"/>
+				</xsd:sequence>
+			</xsd:sequence>
+			<xsd:attribute name="propertyCode" type="xsd:integer"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="propertyBasicInfo">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:sequence>
+					<xsd:element ref="propertyName"/>
+					<xsd:element ref="accommodationType"/>
+					<xsd:element ref="propertyType"/>
+					<xsd:element ref="propertyOwnership"/>
+					<xsd:element ref="address"/>
+					<xsd:element ref="geoLocation"/>
+					<xsd:element ref="numberOfFloors"/>
+					<xsd:element ref="propertyStarRatings"/>
+					<xsd:element ref="propertyKeyImage"/>
+				</xsd:sequence>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="accommodationType">
+		<xsd:complexType mixed="true">
+			<xsd:attribute name="code" type="xsd:integer"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="propertyOwnership">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:sequence>
+					<xsd:element ref="propertyChainCode"/>
+					<xsd:element ref="propertyManager"/>
+				</xsd:sequence>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="address">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:sequence>
+					<xsd:element ref="addressLine1"/>
+					<xsd:element ref="addressLine2"/>
+					<xsd:element ref="addressLine3"/>
+					<xsd:element ref="cityName"/>
+					<xsd:element ref="stateProv"/>
+					<xsd:element ref="country"/>
+					<xsd:element ref="postalCode"/>
+				</xsd:sequence>
+			</xsd:sequence>
+			<xsd:attribute name="restricted" type="xsd:string"/>
+			<xsd:attribute name="type" type="xsd:string" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="stateProv">
+		<xsd:complexType mixed="true">
+			<xsd:attribute name="stateCode" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="country">
+		<xsd:complexType mixed="true">
+			<xsd:attribute name="countryCode" type="xsd:string" />
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="geoLocation">
+		<xsd:complexType>
+			<xsd:attribute name="latitiude" type="xsd:string"/>
+			<xsd:attribute name="longitude" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="propertyStarRatings">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="propertyStarRating"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="propertyStarRating">
+		<xsd:complexType>
+			<xsd:attribute name="rateValue" type="xsd:string" />
+			<xsd:attribute name="source" type="xsd:string" />
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="propertyKeyImage">
+		<xsd:complexType>
+			<xsd:attribute name="imageCaption" type="xsd:string"/>
+			<xsd:attribute name="lastModifiedDate" type="xsd:string"/>
+			<xsd:attribute name="mimeType" type="xsd:string" />
+			<xsd:attribute name="mediaID" type="xsd:string" />
+			<xsd:attribute name="url" type="xsd:string" />
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="units">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="unit"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="unit">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:sequence>
+					<xsd:element ref="averageNightlyRate"/>
+					<xsd:element ref="unitBasicInfo"/>
+				</xsd:sequence>
+			</xsd:sequence>
+			<xsd:attribute name="availableUnits" type="xsd:integer" />
+			<xsd:attribute name="unitCode" type="xsd:integer" />
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="averageNightlyRate">
+		<xsd:complexType>
+			<xsd:attribute name="amount" type="xsd:decimal" />
+			<xsd:attribute name="currency" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="unitBasicInfo">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:sequence>
+					<xsd:element ref="unitName"/>
+					<xsd:element ref="unitType"/>
+					<xsd:element ref="address"/>
+					<xsd:element ref="geoLocation"/>
+					<xsd:element ref="occupancy"/>
+					<xsd:element ref="bedRooms"/>
+					<xsd:element ref="baths"/>
+					<xsd:element ref="halfBaths"/>
+					<xsd:element ref="petsAllowed"/>
+					<xsd:element ref="nonSmoking"/>
+					<xsd:element ref="unitKeyImage"/>
+				</xsd:sequence>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="occupancy">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:sequence>
+					<xsd:element ref="minOccupancy"/>
+					<xsd:element ref="maxOccupancy"/>
+					<xsd:element ref="privateOccupancy"/>
+				</xsd:sequence>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="bedRooms">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="bedRoom"/>
+			</xsd:sequence>
+			<xsd:attribute name="totalCount" type="xsd:boolean"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="bedRoom">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="bed"/>
+			</xsd:sequence>
+			<xsd:attribute name="number" type="xsd:boolean" />
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="bed">
+		<xsd:complexType>
+			<xsd:attribute name="quantity" type="xsd:string"/>
+			<xsd:attribute name="type" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="unitKeyImage">
+		<xsd:complexType>
+			<xsd:attribute name="imageCaption" type="xsd:string" />
+			<xsd:attribute name="lastModifiedDate" type="xsd:string"/>
+			<xsd:attribute name="mimeType" type="xsd:string" />
+			<xsd:attribute name="mediaID" type="xsd:string"/>
+			<xsd:attribute name="url" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

@@ -1,0 +1,165 @@
+buildscript {
+    repositories {
+		//jcenter()
+		//mavenCentral()
+		mavenLocal()
+		maven {
+			url "$mavenRepo"
+		}
+    }
+}
+
+
+apply plugin: "war"
+
+apply plugin: "jacoco"
+
+apply plugin: "sonar-runner"
+
+
+archivesBaseName = 'distributionapp'
+
+war {
+	baseName='distributionapp'
+	//version = '1.0.0.0'
+}
+
+
+sourceSets {
+    integrationTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integration-test/java')
+        }
+        resources.srcDir file('src/integration-test/resources')
+    }
+}
+
+configurations {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+}
+
+
+ext {
+	springVersion="4.1.6.RELEASE"
+	servletApiVersion="3.1.0"
+	jspApiVersion="2.1"
+	jstlVersion="1.2"
+	junitVersion="4.12"
+	cxfVersion = "3.1.1"
+	
+	cxfArtifacts = [
+            'cxf-rt-frontend-jaxws',
+            'cxf-rt-frontend-jaxrs',
+            'cxf-rt-transports-http',
+            'cxf-rt-rs-client',
+            'cxf-rt-rs-service-description',
+			'cxf-rt-transports-http-jetty'
+    ]
+}
+
+dependencies {
+    // The production code uses the SLF4J logging API at compile time
+	
+	compile project(':distribution-common')
+	
+    compile "org.springframework:spring-web:$springVersion"
+	compile "org.springframework:spring-webmvc:$springVersion"
+	compile "org.codehaus.jackson:jackson-jaxrs:1.9.13"
+	
+	cxfArtifacts.each { artifact ->
+        compile "org.apache.cxf:$artifact:$cxfVersion"
+    }
+	
+	compile 'org.hibernate:hibernate-validator:5.1.3.Final'
+	
+	compile 'commons-beanutils:commons-beanutils:1.9.2'
+
+	compile 'org.apache.httpcomponents:httpclient:4.5'
+	
+	compile 'org.codehaus.jackson:jackson-jaxrs:1.9.13'
+	compile 'org.codehaus.jackson:jackson-xc:1.9.13'
+	
+	compile 'com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0'
+
+	providedCompile "javax.servlet:javax.servlet-api:$servletApiVersion", "javax.servlet.jsp:jsp-api:$jspApiVersion"
+
+	runtime ("javax.servlet:jstl:$jstlVersion") {
+		exclude group: "javax.servlet", module: "javax.servlet-api"
+		exclude group: "javax.servlet", module: "jsp-api"
+	}
+	
+	testCompile "org.springframework:spring-test:$springVersion"
+}
+
+task tomcatDeploy(type: Copy, dependsOn: war) {   
+    from war
+	into "$tomcatHome/webapps"
+}
+
+task integrationTest(type: Test) {
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath = sourceSets.integrationTest.runtimeClasspath
+	outputs.upToDateWhen { false }
+	beforeTest { 
+		descriptor -> logger.lifecycle("Running Integration test : '" + descriptor + "'")
+  	}
+}
+
+tasks.withType(Test) {
+    reports.html.destination = file("${reporting.baseDir}/${name}")
+}
+
+test {
+  testLogging.showStandardStreams = true
+  ignoreFailures=true
+  jacoco {
+          destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
+  }
+  beforeTest { 
+		descriptor -> logger.lifecycle("Running test : '" + descriptor + "'")
+  	}
+}
+
+integrationTest {
+  testLogging.showStandardStreams = true
+  ignoreFailures=true
+  jacoco {
+          destinationFile = file("$buildDir/jacoco/jacocoIntegTest.exec")
+  }
+}
+
+/*
+sonarqube {
+  properties {
+    property "sonar.projectName", "Distribution Application"
+    property "sonar.projectKey", "org.vacaystayconnect:distribution-app"
+	property "sonar.jacoco.reportPath", "$buildDir/jacoco/jacocoTest.exec"
+	property "sonar.jacoco.itReportPath", "$buildDir/jacoco/jacocoIntegTest.exec"
+  }
+}
+*/
+
+sonarRunner {
+    sonarProperties {
+        property "sonar.projectName", "Distribution Application"
+		property "sonar.projectKey", "org.vacaystayconnect:distribution-app"
+		property "sonar.jacoco.reportPath", "$buildDir/jacoco/jacocoTest.exec"
+		property "sonar.jacoco.itReportPath", "$buildDir/jacoco/jacocoIntegTest.exec"
+		property "sonar.projectVersion", "1.0.0"
+   }
+}
+
+
+jacocoTestReport {
+	reports {
+		html.enabled = true
+		html.destination "${buildDir}/jacocoHtml"
+	}
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.4'
+}

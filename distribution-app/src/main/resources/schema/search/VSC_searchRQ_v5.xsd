@@ -1,0 +1,219 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="VSC_searchRQ">
+    <xs:annotation>
+      <xs:documentation>NOTES: VSC_searchRQ - 12Aug15 v0.5  NOTES: VSC_searchRQ - Basic search request where a city, state/province, country, region or postal code is used. Response to this request will only include available property units. The response will not contain any rates info. Details like policies and other basic info can be included based on the &lt;detailsInclusive> tag (set to false by default). Search by property is also supported within.  NOTES: The following will not be supported in the current version:
+	1. Search by ListingID (to be included in 'Units') - (to be confirmed).
+	2. displaySequence - DisplaySequence by Priority, Ratings will need to be supported in future. displaySequence by InventoryType (Need to discuss).
+	3. &lt;Loyalty VendorCode="ICE" MembershipID="ICE101" ProgramName=""/> - Cannot support now as Loyalty search/features are not implemented.
+	4. &lt;availability>All&lt;/availability> - Can be supported in future. Indicates if all results are required to be returned or only the available ones.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="pos">
+          <xs:annotation>
+            <xs:documentation>** HEADER ELEMENT **  NOTES: Header element will be consistent to all requests.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="sources">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="source">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element type="xs:string" name="type"/>
+                          <xs:element type="xs:byte" name="ID"/>
+                          <xs:element type="xs:string" name="password"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="position">
+                <xs:annotation>
+                  <xs:documentation>NOTES: Assumption - All parties consuming VSC API will have ID and Password, through which Company Name, Booking channel can be obtained. Source Latitude, Longitude, IP, Language and Currency is included for future use (all optional).</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="latitude"/>
+                      <xs:attribute type="xs:string" name="longitude"/>
+                      <xs:attribute type="xs:string" name="IP"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element type="xs:string" name="language"/>
+              <xs:element type="xs:string" name="currency"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="searchRequest">
+          <xs:annotation>
+            <xs:documentation>** REQUEST ELEMENT - searchRequest **  NOTES: DetailsInclusive - Indicates whether basic details of Property and Unit needs to be returned.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="location">
+                <xs:annotation>
+                  <xs:documentation>NOTES: location - Only one 'location' will be supported. 
+		cityName - CCity - Can be left open. Not required. 
+		stateProvince - 'Name' &amp; 'Code' - One or the other is always mandatory. 
+		country - 'Name' &amp; 'Code' - One or the other is always mandatory. Country Code will be 3 letter code.
+		region - Optional.
+		postalCode - Zip Code or Postal Code - Optional.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="cityName"/>
+                    <xs:element name="stateProvince">
+                      <xs:annotation>
+                        <xs:documentation>cityName is not mandatory. Can be left open.</xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:string" name="name"/>
+                            <xs:attribute type="xs:string" name="code"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="country">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:string" name="name"/>
+                            <xs:attribute type="xs:string" name="code"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element type="xs:string" name="region"/>
+                    <xs:element type="xs:string" name="postalCode"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="property">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="propertyName">
+                      <xs:annotation>
+                        <xs:documentation>Will support one/all values  NOTES: property: Search by property. '*' indicates - 'All/Any'. All fields are optional.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="propertyOwnership">
+                      <xs:annotation>
+                        <xs:documentation>To be checked with partner configurations</xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element type="xs:string" name="propertyChainCode"/>
+                          <xs:element type="xs:string" name="propertyManager"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <!--  
+                    <xs:element name="accommodationType">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:string" name="code"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                    -->
+                    <xs:element name="units">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="unit">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element type="xs:string" name="unitName">
+                                  <xs:annotation>
+                                    <xs:documentation>Will support one/all values</xs:documentation>
+                                  </xs:annotation>
+                                </xs:element>
+                                <xs:element type="xs:string" name="unitType"/>
+                                <xs:element type="xs:string" name="numberOfBedRooms"/>
+                              </xs:sequence>
+                              <xs:attribute type="xs:string" name="unitCode"/>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute type="xs:string" name="propertyCode"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="stayDateRange">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:date" name="checkIn"/>
+                      <xs:attribute type="xs:date" name="checkOut"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="guestCounts">
+                <xs:annotation>
+                  <xs:documentation>NOTES: guestCount: ageQualifyingCode value will be based upon the master details push that VSC sends to each partner.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="guestCount">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:byte" name="ageQualifyingCode"/>
+                            <xs:attribute type="xs:byte" name="count"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="pets">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:byte" name="count"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element type="xs:string" name="displaySequence">
+                <xs:annotation>
+                  <xs:documentation>NOTES: pets 'count' - '*' - Not Applicable/Not selected; '0' - No pets/ Not interested in pet acceptable Units, '1' and above - count of pets</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element type="xs:string" name="promoCode">
+                <xs:annotation>
+                  <xs:documentation>NOTES: displaySequence values- LowToHigh (Default), HighToLow, MostReviewed</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element type="xs:byte" name="maxResults">
+                <xs:annotation>
+                  <xs:documentation>NOTES: PromoCode support will be restricted to the rate types that is sent across and not to general promotions supported from distributor.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element type="xs:string" name="detailsInclusive">
+                <xs:annotation>
+                  <xs:documentation>NOTES: Max. of 50 results will only need to be returned.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="timeStamp"/>
+      <xs:attribute type="xs:string" name="target"/>
+      <xs:attribute type="xs:float" name="version"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

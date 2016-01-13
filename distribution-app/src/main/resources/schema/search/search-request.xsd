@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Created by XStruct, Version 1.1 -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!-- Simple types -->
+	<xsd:element name="type" type="xsd:string"/>
+	<xsd:element name="ID" type="xsd:integer" />
+	<xsd:element name="password" type="xsd:string"/>
+	<xsd:element name="language" type="xsd:string" />
+	<xsd:element name="currency" type="xsd:string" />
+	<xsd:element name="cityName" type="xsd:string"/>
+	<xsd:element name="region" type="xsd:string"/>
+	<xsd:element name="postalCode" type="xsd:string"/>
+	<xsd:element name="propertyName" type="xsd:string"/>
+	<xsd:element name="propertyChainCode" type="xsd:string" />
+	<xsd:element name="propertyManager" type="xsd:string" />
+	<xsd:element name="unitName" type="xsd:string"/>
+	<xsd:element name="unitType" type="xsd:string"/>
+	<xsd:element name="displaySequence" type="xsd:string"/>
+	<xsd:element name="maxResults" type="xsd:integer"/>
+	<xsd:element name="detailsInclusive" type="xsd:string" />
+	<xsd:element name="numberOfBedRooms" type="xsd:integer"/>
+	<xsd:element name="promoCode" type="xsd:string"/>
+
+	
+<!-- Complex types -->
+	<xsd:element name="VSC_searchRQ">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:sequence>
+					<xsd:element ref="pos"/>
+					<xsd:element ref="searchRequest"/>
+				</xsd:sequence>
+			</xsd:sequence>
+			<xsd:attribute name="timeStamp" type="xsd:string"/>
+			<xsd:attribute name="version" type="xsd:decimal"/>
+			<xsd:attribute name="target" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="pos">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:sequence>
+					<xsd:element ref="sources"/>
+					<xsd:element ref="position"/>
+					<xsd:element ref="language"/>
+					<xsd:element ref="currency"/>
+				</xsd:sequence>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="sources">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="source"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="source">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:sequence>
+					<xsd:element ref="type"/>
+					<xsd:element ref="ID"/>
+					<xsd:element ref="password"/>
+				</xsd:sequence>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="position">
+		<xsd:complexType>
+			<xsd:attribute name="latitude" type="xsd:string"/>
+			<xsd:attribute name="IP" type="xsd:string"/>
+			<xsd:attribute name="longitude" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="searchRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:sequence>
+					<xsd:element ref="location"/>
+					<xsd:element ref="property"/>
+					<xsd:element ref="stayDateRange"/>
+					<xsd:element ref="guestCounts"/>
+					<xsd:element ref="pets"/>
+					<xsd:element ref="displaySequence"/>
+					<xsd:element ref="promoCode"/>
+					<xsd:element ref="maxResults"/>
+					<xsd:element ref="detailsInclusive"/>
+				</xsd:sequence>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="location">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:sequence>
+					<xsd:element ref="cityName"/>
+					<xsd:element ref="stateProvince"/>
+					<xsd:element ref="country"/>
+					<xsd:element ref="region"/>
+					<xsd:element ref="postalCode"/>
+				</xsd:sequence>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="stateProvince">
+		<xsd:complexType>
+			<xsd:attribute name="code" type="xsd:string"/>
+			<xsd:attribute name="name" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="country">
+		<xsd:complexType>
+			<xsd:attribute name="code" type="xsd:string"/>
+			<xsd:attribute name="name" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="property">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:sequence>
+					<xsd:element ref="propertyName"/>
+					<xsd:element ref="propertyOwnership"/>
+					<xsd:element ref="accommodationType"/>
+					<xsd:element ref="units"/>
+				</xsd:sequence>
+			</xsd:sequence>
+			<xsd:attribute name="propertyCode" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="propertyOwnership">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:sequence>
+					<xsd:element ref="propertyChainCode"/>
+					<xsd:element ref="propertyManager"/>
+				</xsd:sequence>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="accommodationType">
+		<xsd:complexType mixed="true">
+			<xsd:attribute name="code" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="units">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="unit"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="unit">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:sequence>
+					<xsd:element ref="unitName"/>
+					<xsd:element ref="unitType"/>
+					<xsd:element ref="numberOfBedRooms"/>
+				</xsd:sequence>
+			</xsd:sequence>
+			<xsd:attribute name="unitCode" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="stayDateRange">
+		<xsd:complexType>
+			<xsd:attribute name="checkIn" type="xsd:date"/>
+			<xsd:attribute name="checkOut" type="xsd:date"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="guestCounts">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="guestCount"  minOccurs="1" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="guestCount">
+		<xsd:complexType>
+			<xsd:attribute name="count" type="xsd:integer"/>
+			<xsd:attribute name="ageQualifyingCode" type="xsd:boolean"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="pets">
+		<xsd:complexType>
+			<xsd:attribute name="count" type="xsd:boolean"/>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

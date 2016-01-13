@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone='yes'?>
+<!-- NOTES: VSC_searchRQ - 12Aug15 v0.5 -->
+<!-- NOTES: VSC_searchRQ - Basic search request where a city, state/province, country, region or postal code is used. Response to this request will only include available property units. The response will not contain any rates info. Details like policies and other basic info can be included based on the <detailsInclusive> tag (set to false by default). Search by property is also supported within. -->
+<VSC_searchRQ timeStamp="2015-06-01T16:35:43+5:30" target="Test" version="1.000" xmlns="">
+	<!-- ** HEADER ELEMENT ** -->
+	<!-- NOTES: Header element will be consistent to all requests. -->
+	<pos>
+		<sources>
+			<source>
+				<type>partner</type>
+				<ID>18</ID>
+				<password>password</password>
+			</source>
+		</sources>
+		<!-- NOTES: Assumption - All parties consuming VSC API will have ID and Password, through which Company Name, Booking channel can be obtained. Source Latitude, Longitude, IP, Language and Currency is included for future use (all optional). -->
+		<position latitude="" longitude="" IP="" />
+		<language>EN</language>
+		<currency>USD</currency>		
+	</pos>
+	<!-- ** REQUEST ELEMENT - searchRequest ** -->
+	<searchRequest>
+		<location>
+			<cityName>Orlando</cityName>
+			<!-- cityName is not mandatory. Can be left open. -->
+			<stateProvince name="MANDATORY" code="One or the other is mandatory." />
+			<country name="MANDATORY" code= "FORMAT of the country code to be identified. One or the other is mandatory." />
+			<region>optional</region>
+			<postalCode>optional</postalCode>
+		<!-- NOTES: location - Only one 'location' will be supported. 
+		cityName - CCity - Can be left open. Not required. 
+		stateProvince - 'Name' & 'Code' - One or the other is always mandatory. 
+		country - 'Name' & 'Code' - One or the other is always mandatory. Country Code will be 3 letter code.
+		region - Optional.
+		postalCode - Zip Code or Postal Code - Optional. -->
+		</location>
+		<property propertyCode="*"><!-- Will support one/all values -->
+			<!-- NOTES: property: Search by property. '*' indicates - 'All/Any'. All fields are optional. -->
+			<propertyName></propertyName>
+			<propertyOwnership>
+				<propertyChainCode>*</propertyChainCode>
+				<propertyManager>*</propertyManager><!-- To be checked with partner configurations -->
+			</propertyOwnership>
+			<accommodationType code="">*</accommodationType>			
+			<units>
+				<unit unitCode="*"><!-- Will support one/all values -->
+					<unitName>*</unitName>
+					<unitType>*</unitType>
+					<numberOfBedRooms></numberOfBedRooms>					
+				</unit>
+			</units>		
+		</property>	
+		<stayDateRange checkIn="2015-08-01" checkOut="2015-08-05"/>
+		<guestCounts>
+			<guestCount ageQualifyingCode="1" count="2"/>
+			<!-- NOTES: guestCount: ageQualifyingCode value will be based upon the master details push that VSC sends to each partner. -->
+		</guestCounts>		
+		<pets count="1"/>
+		<!-- NOTES: pets 'count' - '*' - Not Applicable/Not selected; '0' - No pets/ Not interested in pet acceptable Units, '1' and above - count of pets -->	
+		<displaySequence>LowToHigh</displaySequence>
+		<!-- NOTES: displaySequence values- LowToHigh (Default), HighToLow, MostReviewed -->		
+		<promoCode></promoCode> 
+		<!-- NOTES: PromoCode support will be restricted to the rate types that is sent across and not to general promotions supported from distributor. -->
+		<maxResults>50</maxResults> 
+		<!-- NOTES: Max. of 50 results will only need to be returned. -->
+		<detailsInclusive>True</detailsInclusive>
+		<!-- NOTES: DetailsInclusive - Indicates whether basic details of Property and Unit needs to be returned. -->
+	</searchRequest>
+	
+	<!-- NOTES: The following will not be supported in the current version:
+	1. Search by ListingID (to be included in 'Units') - (to be confirmed).
+	2. displaySequence - DisplaySequence by Priority, Ratings will need to be supported in future. displaySequence by InventoryType (Need to discuss).
+	3. <Loyalty VendorCode="ICE" MembershipID="ICE101" ProgramName=""/> - Cannot support now as Loyalty search/features are not implemented.
+	4. <availability>All</availability> - Can be supported in future. Indicates if all results are required to be returned or only the available ones. 
+	-->
+</VSC_searchRQ>

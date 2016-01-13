@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+
+
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyyMMdd-HHmmss.SSS}|%-5p|%X{sessionId}|%c: %m%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="DEBUG"/>
+        </filter>
+    </appender>
+
+    <appender name="VSC" class="com.vsc.logging.VscLoggingFileAppender">
+        <param name="file" value="D:/opt/vsc/logs/vsc-distribution.log"/>
+        <param name="fileAppend" value="true"/>
+        <param name="DatePattern" value="'.'yyyyMMdd-HH'00'" />
+        <layout class="com.vsc.logging.VSCLogLayout">
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="DEBUG"/>
+        </filter>
+    </appender>
+
+	<logger name="org.apache.cxf" additivity="false">
+    	<level value="INFO" />
+    	<appender-ref ref="CONSOLE"/>
+    	<appender-ref ref="VSC" />
+	</logger>
+
+    <logger name="org.apache" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="VSC"/>
+    </logger>
+
+    <logger name="org.springframework" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="VSC"/>
+    </logger>
+
+    <logger name="com.vsc" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="VSC"/>
+    </logger>
+
+    <root>
+        <level value="INFO"/>
+        <appender-ref ref="VSC"/>
+    </root>
+
+</log4j:configuration>
