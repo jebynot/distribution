@@ -12,6 +12,7 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.vsc.validation.validator.PropertySearchValidator;
 import com.vsc.validation.validator.QuoteServiceValidator;
 import com.vsc.validation.validator.ReserveServiceValidator;
@@ -30,7 +31,6 @@ import org.apache.cxf.jaxrs.validation.JAXRSBeanValidationOutInterceptor;
 import org.apache.cxf.jaxrs.validation.ValidationExceptionMapper;
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
 import org.apache.cxf.message.Message;
-import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +42,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.web.client.RestTemplate;
-
 import com.vsc.ws.rs.property.PropertyService;
 import com.vsc.ws.rs.property.impl.PropertyServiceImpl;
 import com.vsc.ws.rs.quote.QuoteService;
@@ -130,9 +129,6 @@ public class AppConfig {
    	return new QuoteServiceValidator(validator());		
    	}		
  
-
-
-
     @Bean
     public BookingService bookingService() {
     	return new BookingServiceImpl();

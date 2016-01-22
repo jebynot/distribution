@@ -17,20 +17,16 @@ import com.vsc.validation.contraints.LocationReserveValidation;
 
 
 public class LocationReserveValidationImpl implements ConstraintValidator<LocationReserveValidation, Address> {
-	private static final Logger logger = Logger.getLogger(LocationValidationImpl.class);
+	private static final Logger logger = Logger.getLogger(LocationReserveValidation.class);
 
-  //  private String cityName;
-    private String state;
+     private String state;
     private String country;
-   // private String region;
-   // private String postalCode;
-	@Override
+   	@Override
 	public void initialize(LocationReserveValidation constraintAnnotation) {
-	//	cityName = constraintAnnotation.cityName();
+	
         state = constraintAnnotation.state();
         country = constraintAnnotation.country();
-  //      postalCode = constraintAnnotation.postalCode();
-		
+ 		
 	}
 
 	@Override
@@ -38,11 +34,9 @@ public class LocationReserveValidationImpl implements ConstraintValidator<Locati
 
         Boolean status = Boolean.TRUE;
         try {
-           // String requestCityName = (String) PropertyUtils.getProperty(address, cityName);
             StateProvince stateProvince = (StateProvince)PropertyUtils.getProperty(address, state);
             Country requestCountry = (Country)PropertyUtils.getProperty(address, country);
 
-           // if(!StringUtils.isEmpty(requestCityName)){
 	            if(stateProvince == null || (StringUtils.isEmpty(stateProvince.getName())
 	                    && StringUtils.isEmpty(stateProvince.getCode()))) {
 	            	context.buildConstraintViolationWithTemplate("{698}").addConstraintViolation();
@@ -54,8 +48,6 @@ public class LocationReserveValidationImpl implements ConstraintValidator<Locati
 	                context.buildConstraintViolationWithTemplate("{701}").addConstraintViolation();
 	                status = Boolean.FALSE;
 	            }
-         //   }
-           
             
 
         } catch (IllegalAccessException e) {

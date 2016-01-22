@@ -9,6 +9,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.vsc.model.reserve.cancel.request.VSCCancelRQ;
+import com.vsc.model.reserve.details.request.VSCRetrieveResDetailsRQ;
 import com.vsc.model.reserve.request.VSCReserveRQ;
 
 @Path("/reserve")
@@ -26,5 +27,10 @@ public interface ReserveService {
 	@Produces({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
 	public Response cancel(VSCCancelRQ cancelRQ, @QueryParam("type") String type);
 	
+	@Path("/retrieveReservation")
+	@POST
+	@Consumes({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
+	@Produces({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
+	public Response retrieveReservation(VSCRetrieveResDetailsRQ retrieveResDetailsRQ, @QueryParam("type") String type);
 	
 }
