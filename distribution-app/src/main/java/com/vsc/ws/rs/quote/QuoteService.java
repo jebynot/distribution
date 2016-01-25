@@ -8,10 +8,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.vsc.model.property.summary.request.VSCPropertyListRQ;
 import com.vsc.model.quote.request.VSCQuoteRQ;
-import com.vsc.model.reserve.cancel.request.VSCCancelRQ;
-import com.vsc.model.reserve.request.VSCReserveRQ;
 
 @Path("/quote")
 public interface QuoteService {

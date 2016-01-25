@@ -36,34 +36,18 @@ public class DateCompareImpl implements ConstraintValidator<DateCompare, Object>
 			SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD'T'00:00:00");
 			
 			if (fromDate == null) {
-				context.buildConstraintViolationWithTemplate("{104}").addConstraintViolation();
+				context.buildConstraintViolationWithTemplate("{105}").addConstraintViolation();
 				status = Boolean.FALSE;
 				return status;
 			}
 			if (toDate == null) {
-				context.buildConstraintViolationWithTemplate("{108}").addConstraintViolation();
+				context.buildConstraintViolationWithTemplate("{109}").addConstraintViolation();
 				status = Boolean.FALSE;
 				return status;
 			}
 			
 			fromDate.setTimezone(DatatypeConstants.FIELD_UNDEFINED);		
 			toDate.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
-			
-			try {
-				sdf.parse(fromDate.toString());
-			} catch (ParseException e) {
-				context.buildConstraintViolationWithTemplate("{105}").addConstraintViolation();
-				status = Boolean.FALSE;
-				return status;
-			}
-			
-			try {
-				sdf.parse(toDate.toString());
-			} catch (ParseException e) {
-				context.buildConstraintViolationWithTemplate("{109}").addConstraintViolation();
-				status = Boolean.FALSE;
-				return status;
-			}
 			
 			Calendar currentDate = Calendar.getInstance();
 			if (fromDate.toGregorianCalendar().before(currentDate)) {

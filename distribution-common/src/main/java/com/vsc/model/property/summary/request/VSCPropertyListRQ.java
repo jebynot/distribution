@@ -20,6 +20,8 @@ import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.vsc.model.common.BaseModel;
+
 
 /**
  * <p>Java class for anonymous complex type.
@@ -51,7 +53,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 })
 @XmlRootElement(name = "VSC_PropertyListRQ")
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class VSCPropertyListRQ {
+public class VSCPropertyListRQ extends BaseModel {
 
     @XmlElement(required = true)
     @NotNull(message = "{009}")

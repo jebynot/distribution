@@ -15,6 +15,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import com.vsc.model.common.BaseModel;
+
 
 /**
  * <p>Java class for anonymous complex type.
@@ -45,7 +47,7 @@ import javax.xml.bind.annotation.XmlType;
     "propertyDetails"
 })
 @XmlRootElement(name = "VSC_PropertyDetailsRQ")
-public class VSCPropertyDetailsRQ {
+public class VSCPropertyDetailsRQ extends BaseModel {
 
     @XmlElement(required = true)
     protected Pos pos;

@@ -4,14 +4,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import com.vsc.context.Context;
-import com.vsc.context.ContextPlaceHolder;
 import com.vsc.model.availability.request.VSCAvailRQ;
 import com.vsc.model.availability.response.VSCAvailRS;
 import com.vsc.model.property.summary.request.VSCPropertyListRQ;
@@ -36,6 +36,10 @@ public class PropertyServiceImpl extends BaseService implements PropertyService 
 	private String esbPropertyListURL;
 	@Value("${property.avail.api.url}")
 	private String esbAvailURL;
+	@Value("${ICE_PARTNER_ID}")
+	private String partnerCode;
+	@Value("${ICE_CURRENCY_CODE}")
+	private String currencyCode;
 	private PropertySearchValidator propertySearchValidator;
 	
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
@@ -58,28 +62,46 @@ public class PropertyServiceImpl extends BaseService implements PropertyService 
 	public Response search(VSCSearchRQ searchRQ, String type) {
 		Errors errors = (Errors)propertySearchValidator.validate(searchRQ);
 		VSCSearchRS searchRS = new VSCSearchRS();
-		searchRS.setTimeStamp(new Date().toString());
-		Context context = ContextPlaceHolder.getContext();
 		String transactionID = getTransactionID();
+		searchRQ.setTransactionID(transactionID);
+		searchRQ.setPartnerID(partnerCode);
+		
+		searchRS.setTransactionID(transactionID);
+		searchRS.setTimeStamp(sdf.format(new Date()));
 		
 		if (errors != null) {
-			for(int i=1; i<errors.getError().size(); i++) {
-				Error error1 = errors.getError().get(i);
-				Error error2 = errors.getError().get(i-1);
-				if(error1.getCode().equalsIgnoreCase(error2.getCode())){
-					errors.getError().remove(error1);
+			for(int i=0; i<errors.getError().size(); i++) {
+				for(int j=i+1; j<errors.getError().size(); j++){
+					Error error1 = errors.getError().get(i);
+					Error error2 = errors.getError().get(j);
+					if(error1.getCode().equalsIgnoreCase(error2.getCode())){
+						errors.getError().remove(error2);
+						j--;
+					}
 				}
 			}
+			
 			searchRS.setErrors(errors);
 			searchRS.setSuccess(null);
-			searchRS.setTransactionID(transactionID);
-			searchRS.setTimeStamp(sdf.format(new Date()));
 			return Response.ok(searchRS).build();
 		} else {
 			searchRS.setSuccess(new Success());
 		}
 		
-		ResponseEntity<VSCSearchRS> responseEntity= restTemplate.postForEntity(esbSearchURL, searchRQ, VSCSearchRS.class);
+		ResponseEntity<VSCSearchRS> responseEntity;
+		try{
+			responseEntity = restTemplate.postForEntity(esbSearchURL, searchRQ, VSCSearchRS.class);
+		} catch(RestClientException exception) {
+            errors = new Errors();
+            Error error = new Error();
+            error.setCode("006");
+            error.setContent("System unavailable.");
+            errors.getError().add(error);
+            searchRS.setErrors(errors);
+            searchRS.setSuccess(null);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(searchRS).build();
+		}
+		
 		searchRS = responseEntity.getBody();
 		searchRS.setTransactionID(transactionID);
 		searchRS.setTimeStamp(sdf.format(new Date()));
@@ -90,27 +112,45 @@ public class PropertyServiceImpl extends BaseService implements PropertyService 
 	public Response getPopertyList(VSCPropertyListRQ propertyListRQ, String type) {
 		com.vsc.model.property.summary.response.Errors errors = (com.vsc.model.property.summary.response.Errors)propertySearchValidator.validate(propertyListRQ);
 		VSCPropertyListRS propertyListRS = new VSCPropertyListRS(); 
-		propertyListRS.setTimeStamp(new Date().toString());
-		Context context = ContextPlaceHolder.getContext();
-		String transactionID = context.getTransactionId();
+		String transactionID = getTransactionID();
+		propertyListRQ.setTransactionID(transactionID);
+		propertyListRQ.setPartnerID(partnerCode);
+		propertyListRS.setTransactionID(transactionID);
+		propertyListRS.setTimeStamp(sdf.format(new Date()));
+		
 		if (errors != null) {
-			for(int i=1; i<errors.getError().size(); i++){
-				com.vsc.model.property.summary.response.Error error1 = errors.getError().get(i);
-				com.vsc.model.property.summary.response.Error error2 = errors.getError().get(i-1);
-				if(error1.getCode().equalsIgnoreCase(error2.getCode())){
-					errors.getError().remove(error1);
+			for(int i=0; i<errors.getError().size(); i++) {
+				for(int j=i+1; j<errors.getError().size(); j++){
+					com.vsc.model.property.summary.response.Error error1 = errors.getError().get(i);
+					com.vsc.model.property.summary.response.Error error2 = errors.getError().get(j);
+					if(error1.getCode().equalsIgnoreCase(error2.getCode())){
+						errors.getError().remove(error2);
+						j--;
+					}
 				}
 			}
+			
 			propertyListRS.setErrors(errors);
 			propertyListRS.setSuccess(null);
-			propertyListRS.setTransactionID(transactionID);
-			propertyListRS.setTimeStamp(sdf.format(new Date()));
 			return Response.ok(propertyListRS).build();
 		} else {
 			propertyListRS.setSuccess(new com.vsc.model.property.summary.response.Success());
 		}
 		
-		ResponseEntity<VSCPropertyListRS> responseEntity = restTemplate.postForEntity(esbPropertyListURL, propertyListRQ, VSCPropertyListRS.class);
+		ResponseEntity<VSCPropertyListRS> responseEntity;
+		try{
+			responseEntity = restTemplate.postForEntity(esbPropertyListURL, propertyListRQ, VSCPropertyListRS.class);
+		} catch(RestClientException exception) {
+            errors = new com.vsc.model.property.summary.response.Errors();
+            com.vsc.model.property.summary.response.Error error = new com.vsc.model.property.summary.response.Error();
+            error.setCode("006");
+            error.setContent("System unavailable.");
+            errors.getError().add(error);
+            propertyListRS.setErrors(errors);
+            propertyListRS.setSuccess(null);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(propertyListRS).build();
+		}
+		
 		propertyListRS = responseEntity.getBody();
 		propertyListRS.setTransactionID(transactionID);
 		propertyListRS.setTimeStamp(sdf.format(new Date()));
@@ -122,29 +162,50 @@ public class PropertyServiceImpl extends BaseService implements PropertyService 
 	public Response getavailability(VSCAvailRQ availRQ, String type) {
 		com.vsc.model.availability.response.Errors errors = (com.vsc.model.availability.response.Errors)propertySearchValidator.validate(availRQ);
 		VSCAvailRS availRS = new VSCAvailRS();
-		availRS.setTimeStamp(new Date().toString());
-		Context context = ContextPlaceHolder.getContext();
-		String transactionID = context.getTransactionId();
+		String transactionID = getTransactionID();
+		availRQ.setTransactionID(transactionID);
+		availRQ.setPartnerID(partnerCode);
+		availRS.setTransactionID(transactionID);
+		availRS.setTimeStamp(sdf.format(new Date()));
+		availRS.setCurrency(currencyCode);
 		
 		if (errors != null) {
-			for(int i=1; i<errors.getError().size(); i++) {
-				com.vsc.model.availability.response.Error error1 = errors.getError().get(i);
-				com.vsc.model.availability.response.Error error2 = errors.getError().get(i-1);
-				if(error1.getCode().equalsIgnoreCase(error2.getCode())){
-					errors.getError().remove(error1);
+			
+			for(int i=0; i<errors.getError().size(); i++) {
+				for(int j=i+1; j<errors.getError().size(); j++){
+					com.vsc.model.availability.response.Error error1 = errors.getError().get(i);
+					com.vsc.model.availability.response.Error error2 = errors.getError().get(j);
+					if(error1.getCode().equalsIgnoreCase(error2.getCode())){
+						errors.getError().remove(error2);
+						j--;
+					}
 				}
 			}
+			
 			availRS.setErrors(errors);
 			availRS.setSuccess(null);
-			availRS.setTransactionID(transactionID);
-			availRS.setTimeStamp(sdf.format(new Date()));
 			return Response.ok(availRS).build();
 		} else {
 			availRS.setSuccess(new com.vsc.model.availability.response.Success());
 		}
 		
-		ResponseEntity<VSCAvailRS> responseEntity= restTemplate.postForEntity(esbAvailURL, availRQ, VSCAvailRS.class);
+		ResponseEntity<VSCAvailRS> responseEntity;
+		try{
+			responseEntity = restTemplate.postForEntity(esbAvailURL, availRQ, VSCAvailRS.class);
+		} catch(RestClientException exception) {
+            errors = new com.vsc.model.availability.response.Errors();
+            com.vsc.model.availability.response.Error error = new com.vsc.model.availability.response.Error();
+            error.setCode("006");
+            error.setContent("System unavailable.");
+            errors.getError().add(error);
+            availRS.setCurrency("USD");
+            availRS.setErrors(errors);
+            availRS.setSuccess(null);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(availRS).build();
+		}
+
 		availRS = responseEntity.getBody();
+		availRS.setCurrency(currencyCode);
 		availRS.setTransactionID(transactionID);
 		availRS.setTimeStamp(sdf.format(new Date()));
 		return Response.ok(availRS).build();
