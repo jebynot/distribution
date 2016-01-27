@@ -1,0 +1,5 @@
+.gradle
+*.iml
+*.ipr
+/distribution-common/build/
+/distribution-app/build

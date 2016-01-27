@@ -22,12 +22,25 @@
         <param-value>WEB-INF/log4j.xml</param-value>
     </context-param>
 
+    <filter>
+        <filter-name>ContextFilter</filter-name>
+        <filter-class>com.vsc.web.filters.ContextFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ContextFilter</filter-name>
+        <url-pattern>/services/*</url-pattern>
+    </filter-mapping>
+
     <listener>
         <listener-class>
             org.springframework.web.context.ContextLoaderListener
         </listener-class>
     </listener>
-  <servlet>
+    <listener>
+        <listener-class>com.vsc.monitoring.MonitoringContextListener</listener-class>
+    </listener>
+
+    <servlet>
       <servlet-name>spring-mvc-dispatcher</servlet-name>
       <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
       <init-param>
@@ -52,7 +65,7 @@
  
  <servlet-mapping>
       <servlet-name>spring-mvc-dispatcher</servlet-name>
-      <url-pattern>/</url-pattern>
+      <url-pattern>/spring/*</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>

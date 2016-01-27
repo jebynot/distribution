@@ -14,7 +14,7 @@
     </appender>
 
     <appender name="VSC" class="com.vsc.logging.VscLoggingFileAppender">
-        <param name="file" value="D:/opt/vsc/logs/vsc-distribution.log"/>
+        <param name="file" value="/opt/vsc/logs/vsc-distribution.log"/>
         <param name="fileAppend" value="true"/>
         <param name="DatePattern" value="'.'yyyyMMdd-HH'00'" />
         <layout class="com.vsc.logging.VSCLogLayout">
@@ -23,12 +23,6 @@
             <param name="LevelMin" value="DEBUG"/>
         </filter>
     </appender>
-
-	<logger name="org.apache.cxf" additivity="false">
-    	<level value="INFO" />
-    	<appender-ref ref="CONSOLE"/>
-    	<appender-ref ref="VSC" />
-	</logger>
 
     <logger name="org.apache" additivity="false">
         <level value="DEBUG"/>

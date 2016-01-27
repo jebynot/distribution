@@ -83,6 +83,11 @@ dependencies {
 	compile 'org.codehaus.jackson:jackson-xc:1.9.13'
 	compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.6.0'
 	compile 'com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0'
+	compile 'com.orbitz.erma:erma-api:4.8.1'
+	compile('com.orbitz.erma:erma-lib:4.8.1') {
+		exclude group: 'org.springframework'
+	}
+
 
 	providedCompile "javax.servlet:javax.servlet-api:$servletApiVersion", "javax.servlet.jsp:jsp-api:$jspApiVersion"
 
