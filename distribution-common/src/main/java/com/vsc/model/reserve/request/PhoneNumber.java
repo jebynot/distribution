@@ -53,6 +53,7 @@ public class PhoneNumber {
     @XmlAttribute(name = "number")
     @NotNull(message = "{010}")
     @NotBlank(message = "{686}")
+    @Pattern(regexp = "^[0-9]+$",message = "{686}")
     protected String number;
     @XmlAttribute(name = "type")
     @Pattern(regexp = "(?i)primary|secondary",message = "{679}")

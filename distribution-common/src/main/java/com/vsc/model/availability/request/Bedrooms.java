@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
 
 
 /**
@@ -51,6 +52,7 @@ public class Bedrooms {
     @XmlElement(required = true)
     @NotNull(message = "{010}")
     @Valid
+    @NotEmpty(message = "{010}")
     protected List<Bedroom> bedroom;
 
     /**

@@ -239,7 +239,7 @@ public class ReservationValidationImpl implements ConstraintValidator<Reservatio
 				}
 				
 				if ((dates_counters!=(stay_range.size()-1))) {//check if counters is equal to the no of days stayed
-					context.buildConstraintViolationWithTemplate("{762}").addConstraintViolation();
+					context.buildConstraintViolationWithTemplate("{760}").addConstraintViolation();
 					status = Boolean.FALSE;
 					return status;
 				}
