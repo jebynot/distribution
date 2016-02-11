@@ -73,7 +73,7 @@ public class AppConfig {
     @DependsOn("cxf")
     public Server jaxRsServer(ApplicationContext appContext) {
         JAXRSServerFactoryBean factory = RuntimeDelegate.getInstance().createEndpoint(jaxRsApiApplication(), JAXRSServerFactoryBean.class);
-        factory.setServiceBeans(Arrays.<Object>asList(propertyService(),reserveService(),quoteService()));
+        factory.setServiceBeans(Arrays.<Object>asList(propertyService(),reserveService(),quoteService(),legacyPropertyService(),legacyReserveService(),legacyQuoteService()));
         factory.setAddress("/rest");
         factory.setProvider(authFilter());
         factory.setProvider(jaxbProvider());
@@ -127,7 +127,37 @@ public class AppConfig {
    	@Bean		
    	public QuoteServiceValidator quoteServiceValidator() {		
    	return new QuoteServiceValidator(validator());		
+   	}	
+   	
+   	@Bean
+    public com.vsc.ws.legacy.rs.property.PropertyService legacyPropertyService() {
+    	return new com.vsc.ws.legacy.rs.property.impl.PropertyServiceImpl(legacyPropertySearchValidator());
+    }
+
+    @Bean
+    public com.vsc.legacy.validation.validator.PropertySearchValidator legacyPropertySearchValidator() {
+        return new com.vsc.legacy.validation.validator.PropertySearchValidator(validator());
+    }
+    
+    @Bean		
+   	public com.vsc.ws.legacy.rs.reserve.ReserveService legacyReserveService() {		
+   	return new com.vsc.ws.legacy.rs.reserve.impl.ReserveServiceImpl(legacyReserveServiceValidator());		
    	}		
+   			
+   	@Bean		
+   	public com.vsc.legacy.validation.validator.ReserveServiceValidator legacyReserveServiceValidator() {		
+   	return new com.vsc.legacy.validation.validator.ReserveServiceValidator(validator());		
+   	}		
+   			
+   	@Bean		
+   	public com.vsc.ws.legacy.rs.quote.QuoteService legacyQuoteService() {		
+   	return new com.vsc.ws.legacy.rs.quote.impl.QuoteServiceImpl(legacyQuoteServiceValidator());		
+   	}		
+   			
+   	@Bean		
+   	public com.vsc.legacy.validation.validator.QuoteServiceValidator legacyQuoteServiceValidator() {		
+   	return new com.vsc.legacy.validation.validator.QuoteServiceValidator(validator());		
+   	}	
  
     @Bean
     public BookingService bookingService() {
