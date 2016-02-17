@@ -10,6 +10,7 @@ package com.vsc.model.availability.request;
 
 import java.math.BigInteger;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -41,6 +42,7 @@ import javax.xml.bind.annotation.XmlType;
 public class GuestCounts {
 
     @XmlAttribute(name = "total")
+    @Min(value = 1,message = "{150}")
     @NotNull(message = "{010}")
     protected BigInteger total;
 

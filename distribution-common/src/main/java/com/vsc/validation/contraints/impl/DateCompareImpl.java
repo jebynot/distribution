@@ -33,8 +33,6 @@ public class DateCompareImpl implements ConstraintValidator<DateCompare, Object>
 			XMLGregorianCalendar fromDate = (XMLGregorianCalendar)PropertyUtils.getProperty(obj, fromDatePropertyName);
 			XMLGregorianCalendar toDate = (XMLGregorianCalendar)PropertyUtils.getProperty(obj, toDatePropertyName);
 
-			SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD'T'00:00:00");
-			
 			if (fromDate == null) {
 				context.buildConstraintViolationWithTemplate("{105}").addConstraintViolation();
 				status = Boolean.FALSE;

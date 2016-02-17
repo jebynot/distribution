@@ -29,8 +29,10 @@ public class DateDeserializer extends JsonDeserializer<XMLGregorianCalendar>{
 		SimpleDateFormat sdf = null;
 		if (value.matches("([0-9]{4})-([0-9]{2})-([0-9]{2})")){
 			sdf = new SimpleDateFormat("yyyy-MM-dd");
-		} else {
+		} else if(value.matches("([0-9]{4})-([0-9]{2})-([0-9]{2})T[0-9]{2}:[0-9]{2}:[0-9]{2}")) {
 			sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		} else {
+			return null;
 		}
 		sdf.setLenient(false);
 		

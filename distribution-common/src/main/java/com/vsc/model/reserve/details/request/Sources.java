@@ -19,6 +19,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 
 /**
  * <p>Java class for anonymous complex type.
@@ -47,6 +49,7 @@ import javax.xml.bind.annotation.XmlType;
 public class Sources {
 
     @XmlElement(required = true)
+    @NotEmpty(message = "{010}")
 	@NotNull(message = "{010}")
     protected List<String> source;
 
