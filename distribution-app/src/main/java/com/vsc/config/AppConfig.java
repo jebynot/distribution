@@ -20,8 +20,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import com.vsc.monitoring.jmx.AnnotationTestBean;
-import com.vsc.monitoring.jmx.JmxTestBean;
 import com.vsc.validation.validator.PropertySearchValidator;
 import com.vsc.validation.validator.QuoteServiceValidator;
 import com.vsc.validation.validator.ReserveServiceValidator;
@@ -30,8 +28,6 @@ import com.vsc.cxf.provider.JSONProvider;
 
 import com.vsc.ws.ping.PingService;
 import com.vsc.ws.ping.impl.PingServiceImpl;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.interceptor.Interceptor;
@@ -64,7 +60,6 @@ import com.vsc.ws.rs.reserve.ReserveService;
 import com.vsc.ws.rs.reserve.impl.ReserveServiceImpl;
 import com.vsc.ws.soap.booking.BookingService;
 import com.vsc.ws.soap.booking.impl.BookingServiceImpl;
-import org.apache.commons.configuration.PropertiesConfiguration;
 
 
 @Configuration
@@ -115,12 +110,6 @@ public class AppConfig {
         return factory.create();
     }
 
-    @Bean
-    public AnnotationTestBean annotationTestBean() {
-        return new AnnotationTestBean();
-    }
-    
-    
     @Bean
     public PingService pingService() {
     	return new PingServiceImpl();
