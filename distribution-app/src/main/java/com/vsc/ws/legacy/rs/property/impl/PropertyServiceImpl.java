@@ -6,6 +6,9 @@ import java.util.Date;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.orbitz.monitoring.api.monitor.TransactionMonitor;
+import org.apache.commons.lang.time.StopWatch;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +31,8 @@ import com.vsc.ws.legacy.rs.property.PropertyService;
 
 public class PropertyServiceImpl extends BaseService implements PropertyService {
 
+	private static final Logger LOGGER = Logger
+			.getLogger(PropertyServiceImpl.class);
 	@Autowired
 	private RestTemplate restTemplate;
 	@Value("${legacy.property.search.api.url}")
@@ -160,6 +165,9 @@ public class PropertyServiceImpl extends BaseService implements PropertyService 
 	
 	@Override
 	public Response getavailability(VSCAvailRQ availRQ, String type) {
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
+		TransactionMonitor monitor = new TransactionMonitor(PropertyServiceImpl.class.getName() + ".getavailability");
 		com.vsc.legacy.model.availability.response.Errors errors = (com.vsc.legacy.model.availability.response.Errors)propertySearchValidator.validate(availRQ);
 		VSCAvailRS availRS = new VSCAvailRS();
 		String transactionID = getTransactionID();
@@ -184,6 +192,8 @@ public class PropertyServiceImpl extends BaseService implements PropertyService 
 			
 			availRS.setErrors(errors);
 			availRS.setSuccess(null);
+			monitor.failed();
+			monitor.done();
 			return Response.ok(availRS).build();
 		} else {
 			availRS.setSuccess(new com.vsc.legacy.model.availability.response.Success());
@@ -192,6 +202,7 @@ public class PropertyServiceImpl extends BaseService implements PropertyService 
 		ResponseEntity<VSCAvailRS> responseEntity;
 		try{
 			responseEntity = restTemplate.postForEntity(esbAvailURL, availRQ, VSCAvailRS.class);
+			monitor.succeeded();
 		} catch(RestClientException exception) {
             errors = new com.vsc.legacy.model.availability.response.Errors();
             com.vsc.legacy.model.availability.response.Error error = new com.vsc.legacy.model.availability.response.Error();
@@ -201,13 +212,23 @@ public class PropertyServiceImpl extends BaseService implements PropertyService 
             availRS.setCurrency("USD");
             availRS.setErrors(errors);
             availRS.setSuccess(null);
+
+			stopWatch.stop();
+			LOGGER.debug("VSC_Avail | Time: " + stopWatch.getTime() + "ms | Transaction ID : " + transactionID + " | Partner ID : "+partnerCode);
+			monitor.failed();
+
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(availRS).build();
+		} finally {
+			monitor.done();
 		}
 
 		availRS = responseEntity.getBody();
 		availRS.setCurrency(currencyCode);
 		availRS.setTransactionID(transactionID);
 		availRS.setTimeStamp(sdf.format(new Date()));
+
+		stopWatch.stop();
+		LOGGER.debug("VSC_Avail | Time: " + stopWatch.getTime() + "ms | Transaction ID : " + transactionID + " | Partner ID : "+partnerCode);
 		return Response.ok(availRS).build();
 	}
 

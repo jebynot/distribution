@@ -98,10 +98,11 @@ public class VSCLogLayout extends Layout {
         }
 
         String encodedMsg = null;
-        try {
-            encodedMsg = URLEncoder.encode(msg.toString(), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-        }
+        //try {
+            //encodedMsg = URLEncoder.encode(msg.toString(), "UTF-8");
+            encodedMsg = msg.toString();
+        //} catch (UnsupportedEncodingException e) {
+        //}
 
         return encodedMsg;
     }

@@ -7,6 +7,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.orbitz.monitoring.api.monitor.TransactionMonitor;
+import org.apache.commons.lang.time.StopWatch;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,7 @@ import com.vsc.ws.rs.property.PropertyService;
 
 public class PropertyServiceImpl extends BaseService implements PropertyService {
 
+	private static final Logger LOGGER = Logger.getLogger(PropertyServiceImpl.class);
 	@Autowired
 	private RestTemplate restTemplate;
 	@Value("${property.search.api.url}")
@@ -179,6 +182,8 @@ public class PropertyServiceImpl extends BaseService implements PropertyService 
 		availRS.setTransactionID(transactionID);
 		availRS.setTimeStamp(sdf.format(new Date()));
 		availRS.setCurrency(currencyCode);
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
 		
 		if (errors != null) {
 			
@@ -223,6 +228,9 @@ public class PropertyServiceImpl extends BaseService implements PropertyService 
 		availRS.setTransactionID(transactionID);
 		availRS.setTimeStamp(sdf.format(new Date()));
 		monitor.done();
+		stopWatch.stop();
+		LOGGER.info("VSC_AvailRS | Time: " + stopWatch.getTime() + "ms | Transaction ID : " + transactionID + " | Partner ID : " + partnerCode);
+		System.out.println("VSC_AvailRS | Time: " + stopWatch.getTime() + "ms | Transaction ID : " + transactionID + " | Partner ID : " + partnerCode);
 		return Response.ok(availRS).build();
 	}
 

@@ -6,6 +6,9 @@ import java.util.Date;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.orbitz.monitoring.api.monitor.TransactionMonitor;
+import org.apache.commons.lang.time.StopWatch;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +29,9 @@ import com.vsc.ws.legacy.rs.common.BaseService;
 import com.vsc.ws.legacy.rs.reserve.ReserveService;
 
 public class ReserveServiceImpl extends BaseService implements ReserveService {
-	
+
+	private static final Logger LOGGER = Logger
+			.getLogger(ReserveServiceImpl.class);
 	@Autowired
 	private RestTemplate restTemplate;
 	@Value("${legacy.reserve.reservation.api.url}")
@@ -51,6 +56,9 @@ public class ReserveServiceImpl extends BaseService implements ReserveService {
 	@Override
 	public Response reserve(VSCReserveRQ reserveRQ, String type) {
 //		setContextData(reserveRQ);
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
+		TransactionMonitor monitor = new TransactionMonitor(ReserveServiceImpl.class.getName() + ".reserve");
 		Errors errors = (Errors)reserveServiceValidator.validate(reserveRQ);
 		VSCReserveRS reserveRS = new VSCReserveRS();
 		String transactionID = getTransactionID();
@@ -75,6 +83,8 @@ public class ReserveServiceImpl extends BaseService implements ReserveService {
 			
 			reserveRS.setErrors(errors);
 			reserveRS.setSuccess(null);
+			monitor.failed();
+			monitor.done();
 			return Response.ok(reserveRS).build();
 		} else {
 			reserveRS.setSuccess(new Success());
@@ -83,6 +93,7 @@ public class ReserveServiceImpl extends BaseService implements ReserveService {
 		ResponseEntity<VSCReserveRS> responseEntity;
 		try{
 			responseEntity = restTemplate.postForEntity(esbReserveURL, reserveRQ, VSCReserveRS.class);
+			monitor.succeeded();
 		} catch(RestClientException exception) {
             errors = new Errors();
             Error error = new Error();
@@ -91,12 +102,23 @@ public class ReserveServiceImpl extends BaseService implements ReserveService {
             errors.getError().add(error);
             reserveRS.setErrors(errors);
             reserveRS.setSuccess(null);
+
+			stopWatch.stop();
+			monitor.failed();
+			LOGGER.debug("VSC_Reserve | Time: " + stopWatch.getTime() + "ms | Transaction ID : " + transactionID + " | Partner ID : "+partnerCode);
+
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(reserveRS).build();
+		} finally {
+			monitor.done();
 		}
 		reserveRS = responseEntity.getBody();
 		reserveRS.setTransactionID(transactionID);
 		reserveRS.setTimeStamp(sdf.format(new Date()));
 		reserveRS.setCurrency(currencyCode);
+
+		stopWatch.stop();
+		LOGGER.debug("VSC_Reserve | Time: " + stopWatch.getTime() + "ms | Transaction ID : " + transactionID + " | Partner ID : "+partnerCode);
+
 		return Response.ok(reserveRS).build();
 	
 	}

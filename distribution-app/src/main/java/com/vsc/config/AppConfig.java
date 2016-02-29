@@ -1,9 +1,16 @@
 package com.vsc.config;
 
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -13,12 +20,18 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.vsc.monitoring.jmx.AnnotationTestBean;
+import com.vsc.monitoring.jmx.JmxTestBean;
 import com.vsc.validation.validator.PropertySearchValidator;
 import com.vsc.validation.validator.QuoteServiceValidator;
 import com.vsc.validation.validator.ReserveServiceValidator;
 import com.vsc.cxf.filters.authentication.BasicAuthFilter;
 import com.vsc.cxf.provider.JSONProvider;
 
+import com.vsc.ws.ping.PingService;
+import com.vsc.ws.ping.impl.PingServiceImpl;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.interceptor.Interceptor;
@@ -37,6 +50,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
@@ -50,10 +64,12 @@ import com.vsc.ws.rs.reserve.ReserveService;
 import com.vsc.ws.rs.reserve.impl.ReserveServiceImpl;
 import com.vsc.ws.soap.booking.BookingService;
 import com.vsc.ws.soap.booking.impl.BookingServiceImpl;
+import org.apache.commons.configuration.PropertiesConfiguration;
 
 
 @Configuration
-@ComponentScan(basePackages = {"com.vsc.controller","com.vsc.services"})
+@EnableMBeanExport
+@ComponentScan(basePackages = {"com.vsc.controller","com.vsc.services","com.vsc.monitoring"})
 @ImportResource({"classpath:META-INF/cxf/cxf.xml","classpath:META-INF/cxf/cxf-servlet.xml"})
 @PropertySources({
 	@PropertySource(value = "file:${app.config.dir}/partner-config.properties", ignoreResourceNotFound=true),
@@ -73,7 +89,8 @@ public class AppConfig {
     @DependsOn("cxf")
     public Server jaxRsServer(ApplicationContext appContext) {
         JAXRSServerFactoryBean factory = RuntimeDelegate.getInstance().createEndpoint(jaxRsApiApplication(), JAXRSServerFactoryBean.class);
-        factory.setServiceBeans(Arrays.<Object>asList(propertyService(),reserveService(),quoteService(),legacyPropertyService(),legacyReserveService(),legacyQuoteService()));
+        factory.setServiceBeans(Arrays.<Object>asList(propertyService(),reserveService(),quoteService(),
+                legacyPropertyService(),legacyReserveService(),legacyQuoteService(), pingService()));
         factory.setAddress("/rest");
         factory.setProvider(authFilter());
         factory.setProvider(jaxbProvider());
@@ -97,11 +114,21 @@ public class AppConfig {
         factory.setServiceBean(bookingService());
         return factory.create();
     }
+
+    @Bean
+    public AnnotationTestBean annotationTestBean() {
+        return new AnnotationTestBean();
+    }
     
     
     @Bean
+    public PingService pingService() {
+    	return new PingServiceImpl();
+    }
+
+    @Bean
     public PropertyService propertyService() {
-    	return new PropertyServiceImpl(propertySearchValidator());
+        return new PropertyServiceImpl(propertySearchValidator());
     }
 
     @Bean
@@ -206,10 +233,37 @@ public class AppConfig {
 	}
     
     @Bean
-	public RestTemplate restTemplate() {
-		RestTemplate restTemplate = new RestTemplate();
+	public RestTemplate restTemplate() throws Exception {
+
+        RestTemplate restTemplate = new RestTemplate();
 		return restTemplate;
 	}
+
+    private void disableSSLCertificates() throws Exception {
+
+        String environment = System.getProperty("environment");
+        if (environment != null && !environment.equals("production")) {
+            TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                }
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                }
+            }
+            };
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            HttpsURLConnection.setDefaultHostnameVerifier( new HostnameVerifier(){
+                public boolean verify(String string,SSLSession ssls) {
+                    return true;
+                }
+            });
+        }
+
+    }
     
     @Bean
     public JacksonJaxbJsonProvider jacksonJaxbJsonProvider() {
@@ -223,5 +277,4 @@ public class AppConfig {
     	map.put("json", MediaType.APPLICATION_JSON);
     	return map;
     }
-    
 }
